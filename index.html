@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div id="main">
+        <div id="topbar">
+            BlackJack
+        </div>
+        <div id="buttonsbar">
+            <button class="button-start" onclick="initGame();">
+                Nuevo Juego
+            </button>
+            <button class="continue-play">
+                Pedir Carta
+            </button>
+            <button class="stop-play">
+                Detener
+            </button>
+        </div>
+        <div id="playerArea">
+            <p class="score"><span>Jugador 1 -</span> <span id="playerCounter">0</span> </p>
+            <ul id="playerCards">
+            </ul>
+        </div>
+        <div id="computerArea">
+            <p class="score"><span>Computer -</span> <span id="pcCounter">0</span></p>
+            <ul id="pcCards">
+            </ul>
+        </div>
+    </div>
+    <script src="assets/js/blackjack.js"></script>
+</body>
+</html>

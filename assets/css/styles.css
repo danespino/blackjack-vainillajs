@@ -1,0 +1,102 @@
+body{
+    background:rgb(35, 79, 6);
+    margin:0px;
+}
+
+#main{
+    width: 100%;
+    margin:0px;
+}
+
+#topbar{
+    background-color: black;
+    color: white;
+    font-weight: 600;
+    font-size: large;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    width: 100%;
+    height: 60px;
+    text-align: center;
+    padding-top: 30px;
+}
+#buttonsbar{
+    width: 100%;
+    height: 45px;
+    text-align: center;
+    padding: 5px;
+}
+#playerArea{
+    width: 100%;
+    text-align: left;
+    padding: 20px;
+    margin-bottom: 10px;
+}
+#computerArea{
+    width: 100%;
+    text-align: left;
+    padding: 20px;
+    margin-bottom: 10px;
+
+}
+#playerCounter, #pcCounter{
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+    position: relative;
+    left: 1px;
+}
+#playerArea span{
+    color:white;
+    font-size: 20px;
+    margin-bottom: 18px;
+    padding: 15px;
+    font-weight: 600;
+}
+#computerArea span{
+    color:white;
+    font-size: 20px;
+    margin-bottom: 18px;
+    padding: 15px;
+    font-weight: 600;
+}
+#playerArea ul, #computerArea ul{
+    list-style: none;
+    list-style-type: none;
+}
+#playerArea ul li, #computerArea ul li{
+    display: inline-block;
+    margin: 1%;
+}
+#playerArea ul li img, #computerArea ul li img{
+    width: 128px;
+    height: auto;
+}
+.score{
+    font-size: 18px;
+    font-weight: 500;
+    color:white;
+}
+button{
+    padding: 10px;
+    border-radius: 0.45em;
+    background-color: rgb(15, 144, 187);
+    border: 3px rgb(0, 74, 184) outset;
+    color:#dedede;
+    font-weight: 600px;
+    font-size: 14px;
+}
+button:hover{
+    color:white;
+    font-weight: 800;
+    background-color: deepskyblue;
+    border: 3px deepskyblue outset;
+    font-size: 15px;
+}
+.button-start{
+    background-color: #9A2A2A;
+    border: 3px #e02222 inset;
+}
+.button-start:hover{
+    background-color: #9A2A2A;
+    border: 3px #e02222 inset;
+}
