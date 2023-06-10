@@ -47,6 +47,7 @@ const drawCard = (player) => {
     let locationDiv = (player=='player1') ? 'playerCards':'pcCards';
     let drawnCardsUI = document.getElementById(locationDiv);
     (player=='player1') ? ++playerDrawCards : ++pcDrawCards;
+    cards = _.shuffle(cards);
     let drawFlag = 1;
     while(drawFlag == 1){
         let selectedCard = randomCard();      // We select a card
