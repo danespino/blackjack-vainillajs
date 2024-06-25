@@ -1,4 +1,4 @@
-let playerCounter = 0, playerDrawCards = 0, pcCounter = 0, pcDrawCards = 0, lastCard = '';
+let playerCounter = 0, playerDrawCards = 0, pcCounter = 0, pcDrawCards = 0, lastCard = '', playerName = "Jugador 1";
 let selectedCards = [], playerCardsHistory = [], pcCardsHistory = [];
 
 let cards = [], cardsVals=[];
@@ -31,9 +31,13 @@ createDeck();
 Object.freeze(cards, cardsVals);
 
 const initGame = () => {
+    playerName = prompt("Introduce tu nombre de jugador", "Jugador 1");
+    if(playerName==null || playerName=="") playerName = "Jugador 1";
+    document.getElementById('playerName').innerHTML = playerName;
     clearHand();
     drawHand('player1');
     drawHand('computer');
+    evalHands();
 }
 
 const randomCard = () => (Math.floor(Math.random() * cards.length));
@@ -100,8 +104,28 @@ const drawHand = (player) => {
         drawCard(player);
     }
     if(player=='player1'){
-        document.getElementById('playerCounter'). innerHTML = playerCounter;
+        document.getElementById('playerCounter').innerHTML = playerCounter;
     } else{
-        document.getElementById('pcCounter'). innerHTML = pcCounter;
+        document.getElementById('pcCounter').innerHTML = pcCounter;
     }
+}
+
+const evalHands = (firstHand = true) => {
+    let message = "";
+    const status = document.createElement('p');
+    
+    if(playerCounter > 21 && pcCounter <= 21){
+        message = `${playerName} has perdido!`;
+        status.classList.add('statusMsgLoses');
+    } else if(playerCounter <= 21 && pcCounter > 21){
+        message = `¡${playerName} has ganado!`;
+        status.classList.add('statusMsgWin');
+    } else if(playerCounter > 21 && pcCounter > 21){
+        message = `¡No hay Ganador!`;
+        status.classList.add('statusMsgNoWin');
+    }
+
+    status.appendChild(document.createTextNode(message));
+    document.getElementById('tableScore').innerHTML = '';
+    document.getElementById('tableScore').appendChild(status);
 }

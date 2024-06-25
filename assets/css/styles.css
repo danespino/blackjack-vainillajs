@@ -73,7 +73,7 @@ body{
 }
 .score{
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 600;
     color:white;
 }
 button{
@@ -99,4 +99,22 @@ button:hover{
 .button-start:hover{
     background-color: #9A2A2A;
     border: 3px #e02222 inset;
+}
+.statusMsgWin{
+    color: #dedede;
+    font-weight: 800;
+    font-size: 36px;
+    font: Verdana;
+}
+.statusMsgNoWin{
+    color: #ccc;
+    font-weight: 800;
+    font-size: 32px;
+    font: Verdana;
+}
+.statusMsgLoses{
+    color: #e02222;
+    font-weight: 800;
+    font-size: 36px;
+    font: Verdana;
 }
