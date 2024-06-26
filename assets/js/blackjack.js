@@ -55,36 +55,48 @@ const drawCard = (player) => {
     let drawFlag = 1;
     while(drawFlag == 1){
         let selectedCard = randomCard();      // We select a card
+        // We check if we picked randomly a card that has not been picked before, otherwise it will select a new one in the next iteration
         if(selectedCards.lastIndexOf(selectedCard)==-1){
             drawFlag = 0;
             selectedCards.push(selectedCard);   // We must add the drawn card to a discard array
             lastCard = cards[selectedCard];
             cardValue = getCardValue(lastCard);
+            evalIfAce(player, cardValue);   // Check if card selected is an Ace and adjust the counter accordingly
+            // We add the card to the history array of the player
             if(player=='player1'){
-                
-                
+                playerCardsHistory.push(lastCard);
             } else {
-
+                pcCardsHistory.push(lastCard);
             }
+            // We draw the card in the UI
             let liElement = document.createElement('li');
             liElement.innerHTML=`<img src="assets/img/${lastCard}.png" alt="${lastCard}" />`;
             drawnCardsUI.appendChild(liElement);
-
-            if(player=='player1'){
-                
-                isAce = (lastCard.includes('A')) ? true:false;
-                playerCounter += cardValue;
-                if(isAce && playerCounter >= 21) playerCounter=playerCounter-10;
-            } else {
-                pcCounter += getCardValue(lastCard);
-            }
-            
         }
     }
 }
 
-const evalAses = () =>{
-    
+const evalIfAce = (player, cardValue) =>{
+    let isAce = lastCard.includes('A') ? true : false;
+    if(isAce){
+        if(player=='player1'){
+            playerCounter += cardValue;
+            if(playerCounter > 21){
+                playerCounter = playerCounter-10;
+            }
+        } else {
+            pcCounter += cardValue;
+            if(pcCounter > 21){
+                pcCounter = pcCounter-10;
+            }
+        }
+    } else {
+        if(player=='player1'){
+            playerCounter += cardValue;
+        } else {
+            pcCounter += cardValue;
+        }
+    }
 }
 
 const clearHand = () =>{
@@ -111,21 +123,48 @@ const drawHand = (player) => {
 }
 
 const evalHands = (firstHand = true) => {
-    let message = "";
-    const status = document.createElement('p');
-    
     if(playerCounter > 21 && pcCounter <= 21){
-        message = `${playerName} has perdido!`;
-        status.classList.add('statusMsgLoses');
+        drawResult('loss');
     } else if(playerCounter <= 21 && pcCounter > 21){
-        message = `¡${playerName} has ganado!`;
-        status.classList.add('statusMsgWin');
+        drawResult('won');
     } else if(playerCounter > 21 && pcCounter > 21){
-        message = `¡No hay Ganador!`;
-        status.classList.add('statusMsgNoWin');
+        drawResult('tie');
+    }
+}
+
+const drawResult = (result) => {
+    let message = "", imgSrcStat= "";
+    const status = document.createElement('p');
+    let img = document.createElement('img');
+    img.width = 200;
+    img.height = 300;
+
+    switch (result) {
+        case 'won':
+                message = `¡${playerName} has ganado!`;
+                status.classList.add('statusMsgWin');
+                imgSrcStat = "assets/img/trophy.png";
+            break;
+        case 'loss':
+                message = `${playerName} has perdido!`;
+                status.classList.add('statusMsgLoses');
+                imgSrcStat = "assets/img/lose.png";
+            break;
+        case 'tie':
+        default:
+                message = `¡No hay Ganador!`;
+                status.classList.add('statusMsgNoWin');
+                imgSrcStat = "assets/img/tie.png";
+                img.width = 300;
+                img.height = 300;
+            break;
     }
 
     status.appendChild(document.createTextNode(message));
     document.getElementById('tableScore').innerHTML = '';
+    if(imgSrcStat != "") {
+        img.src = imgSrcStat;
+        document.getElementById('tableScore').appendChild(img);
+    }
     document.getElementById('tableScore').appendChild(status);
 }
