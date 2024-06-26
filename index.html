@@ -14,13 +14,13 @@
         </header>
         <div class="row align-items-center">
             <div id="buttonsbar">
-                <button class="button-start" onclick="initGame();">
+                <button id="newGameBtn" class="btn btn-warning" onclick="initGame();">
                     Nuevo Juego
                 </button>
-                <button class="btn continue-play" disabled>
+                <button id="drawCardBtn" class="btn btn-primary" onclick="drawCardUser();" disabled>
                     Pedir Carta
                 </button>
-                <button class="btn stop-play" disabled>
+                <button id="endTurnBtn" class="btn btn-danger" onclick="stopTurn();" disabled>
                     Detener
                 </button>
             </div>
