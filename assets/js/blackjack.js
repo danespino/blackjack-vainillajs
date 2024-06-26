@@ -187,11 +187,16 @@ const drawResult = (result) => {
 const handleStats = (gameStat) => {
     switch(gameStat) {
         case 'newGame':
+            document.getElementById('tableScore').innerHTML = "";
             turn = 1;
             document.getElementById('drawCardBtn').disabled = false;
             document.getElementById('newGameBtn').disabled = true;
             document.getElementById('newGameBtn').style.display = "none";
             if(playerCounter >= 15) document.getElementById('endTurnBtn').disabled = false;
+        break;
+        case 'usrExc':
+            document.getElementById('drawCardBtn').disabled = true;
+            document.getElementById('endTurnBtn').disabled = true;
         break;
         case 'endGame':
             document.getElementById('newGameBtn').style.display = "inline";
@@ -205,7 +210,12 @@ const handleStats = (gameStat) => {
 const drawCardUser = () => {
     if(turn == 1){
         drawCard('player1');
-        if(playerCounter == 21) evalHands();
+        if(playerCounter == 21) {
+            evalHands();
+        } else if(playerCounter > 21) {
+            handleStats('usrExc');
+            stopTurn();
+        }
     } else {
         alert('This should never be reached! Violation Attempt!');
     }
