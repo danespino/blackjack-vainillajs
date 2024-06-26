@@ -1,71 +1,44 @@
-let playerCounter = 0, playerDrawCards = 0, pcCounter = 0, pcDrawCards = 0, lastCard = '';
+let playerCounter = 0, playerDrawCards = 0, pcCounter = 0, pcDrawCards = 0, lastCard = '', playerName = "Jugador 1";
 let selectedCards = [], playerCardsHistory = [], pcCardsHistory = [];
+var turn = 1;        // 1 - Player, 2 - Computer
 
-const cards = [
-    'AH','2H','3H','4H','5H','6H','7H','8H','9H','10H','JH','QH','KH','AD','2D','3D','4D','5D','6D','7D','8D','9D','10D','JD','QD','KD','AC','2C','3C','4C','5C','6C','7C','8C','9C','10C','JC','QC','KC','AS','2S','3S','4S','5S','6S','7S','8S','9S','10S','JS','QS','KS'
-];
+let cards = [], cardsVals=[];
+const types = ['C', 'H', 'S', 'D'];
+const majors = ['J', 'Q', 'K', 'A'];
 
-const cardsVals = [ 
-                {"id":'AH',   "value":11},
-                {"id":'2H',   "value": 2},
-                {"id":'3H',   "value": 3},
-                {"id":'4H',   "value": 4},
-                {"id":'5H',   "value": 5},
-                {"id":'6H',   "value": 6},
-                {"id":'7H',   "value": 7},
-                {"id":'8H',   "value": 8},
-                {"id":'9H',   "value": 9},
-                {"id":'10H',  "value":10},
-                {"id":'JH',   "value":10},
-                {"id":'QH',   "value":10},
-                {"id":'KH',   "value":10},
-                {"id":'AD',   "value":11},
-                {"id":'2D',   "value": 2},
-                {"id":'3D',   "value": 3},
-                {"id":'4D',   "value": 4},
-                {"id":'5D',   "value": 5},
-                {"id":'6D',   "value": 6},
-                {"id":'7D',   "value": 7},
-                {"id":'8D',   "value": 8},
-                {"id":'9D',   "value": 9},
-                {"id":'10D',  "value":10},
-                {"id":'JD',   "value":10},
-                {"id":'QD',   "value":10},
-                {"id":'KD',   "value":10},
-                {"id":'AC',   "value":11},
-                {"id":'2C',   "value": 2},
-                {"id":'3C',   "value": 3},
-                {"id":'4C',   "value": 4},
-                {"id":'5C',   "value": 5},
-                {"id":'6C',   "value": 6},
-                {"id":'7C',   "value": 7},
-                {"id":'8C',   "value": 8},
-                {"id":'9C',   "value": 9},
-                {"id":'10C',  "value":10},
-                {"id":'JC',   "value":10},
-                {"id":'QC',   "value":10},
-                {"id":'KC',   "value":10}, 
-                {"id":'AS',   "value":11},
-                {"id":'2S',   "value": 2},
-                {"id":'3S',   "value": 3},
-                {"id":'4S',   "value": 4},
-                {"id":'5S',   "value": 5},
-                {"id":'6S',   "value": 6},
-                {"id":'7S',   "value": 7},
-                {"id":'8S',   "value": 8},
-                {"id":'9S',   "value": 9},
-                {"id":'10S',  "value":10},
-                {"id":'JS',   "value":10},
-                {"id":'QS',   "value":10},
-                {"id":'KS',   "value":10}, 
-];
+const createDeck = () =>{
+    for(let i=2; i<=10; i++){
+        for (const type of types) {
+            cards.push(i+type);
+            cardsVals.push({"id":i+type,  "value":i});
+        }
 
-Object.freeze(cards);
+        if(i==10){
+            for(const major of majors){
+                for(const type of types){
+                    cards.push(major+type);
+                    if(major!="A"){
+                        cardsVals.push({"id":major+type, "value":i});
+                    } else {
+                        cardsVals.push({"id":major+type, "value":11});
+                    }
+                }
+            }
+        }
+    }
+}
+
+createDeck();
+Object.freeze(cards, cardsVals);
 
 const initGame = () => {
+    playerName = prompt("Introduce tu nombre de jugador", "Jugador 1");
+    if(playerName==null || playerName=="") playerName = "Jugador 1";
+    document.getElementById('playerName').innerHTML = playerName;
     clearHand();
     drawHand('player1');
     drawHand('computer');
+    handleStats('newGame');
 }
 
 const randomCard = () => (Math.floor(Math.random() * cards.length));
@@ -79,42 +52,58 @@ const drawCard = (player) => {
     let locationDiv = (player=='player1') ? 'playerCards':'pcCards';
     let drawnCardsUI = document.getElementById(locationDiv);
     (player=='player1') ? ++playerDrawCards : ++pcDrawCards;
+    cards = _.shuffle(cards);
     let drawFlag = 1;
     while(drawFlag == 1){
         let selectedCard = randomCard();      // We select a card
+        // We check if we picked randomly a card that has not been picked before, otherwise it will select a new one in the next iteration
         if(selectedCards.lastIndexOf(selectedCard)==-1){
             drawFlag = 0;
             selectedCards.push(selectedCard);   // We must add the drawn card to a discard array
             lastCard = cards[selectedCard];
             cardValue = getCardValue(lastCard);
+            evalIfAce(player, cardValue);   // Check if card selected is an Ace and adjust the counter accordingly
+            // We add the card to the history array of the player
             if(player=='player1'){
-                
-                
+                playerCardsHistory.push(lastCard);
+                document.getElementById('playerCounter').innerHTML = playerCounter;
+                if(playerCounter >= 15) document.getElementById('endTurnBtn').disabled = false;
             } else {
-
+                pcCardsHistory.push(lastCard);
+                document.getElementById('pcCounter').innerHTML = pcCounter;
             }
+            // We draw the card in the UI
             let liElement = document.createElement('li');
-            liElement.innerHTML=`<img src="js/blackjack/assets/img/${lastCard}.png" alt="${lastCard}" />`;
+            liElement.innerHTML=`<img src="assets/img/${lastCard}.png" alt="${lastCard}" />`;
             drawnCardsUI.appendChild(liElement);
-
-            if(player=='player1'){
-                
-                isAce = (lastCard.includes('A')) ? true:false;
-                playerCounter += cardValue;
-                if(isAce && playerCounter >= 21) playerCounter=playerCounter-10;
-            } else {
-                pcCounter += getCardValue(lastCard);
-            }
-            
         }
     }
 }
 
-const evalAses = () =>{
-    
+const evalIfAce = (player, cardValue) => {
+    let isAce = lastCard.includes('A') ? true : false;
+    if(isAce){
+        if(player=='player1'){
+            playerCounter += cardValue;
+            if(playerCounter > 21){
+                playerCounter = playerCounter-10;
+            }
+        } else {
+            pcCounter += cardValue;
+            if(pcCounter > 21){
+                pcCounter = pcCounter-10;
+            }
+        }
+    } else {
+        if(player=='player1'){
+            playerCounter += cardValue;
+        } else {
+            pcCounter += cardValue;
+        }
+    }
 }
 
-const clearHand = () =>{
+const clearHand = () => {
     playerCounter = 0;
     playerDrawCards = 0;
     pcCounter = 0;
@@ -126,13 +115,116 @@ const clearHand = () =>{
 }
 
 const drawHand = (player) => {
-    const cardsPerHand = 3;
+    const cardsPerHand = 2;
+
     for (let index = 1; index <= cardsPerHand; index++) {
         drawCard(player);
     }
-    if(player=='player1'){
-        document.getElementById('playerCounter'). innerHTML = playerCounter;
+
+    if(player=='player1') {
+        document.getElementById('playerCounter').innerHTML = playerCounter;
     } else{
-        document.getElementById('pcCounter'). innerHTML = pcCounter;
+        document.getElementById('pcCounter').innerHTML = pcCounter;
     }
+}
+
+const evalHands = () => {
+    if(playerCounter > 21 && pcCounter <= 21){
+        drawResult('loss');
+    } else if(playerCounter <= 21 && pcCounter > 21){
+        drawResult('won');
+    } else if(playerCounter > 21 && pcCounter > 21){
+        drawResult('tie');
+    } else if(playerCounter <= 21 && pcCounter <= 21) {
+        if(playerCounter > pcCounter){
+            drawResult('won');
+        } else if(playerCounter < pcCounter){
+            drawResult('loss');
+        } else {
+            drawResult('tie');      // Less likely to happen, but covered if in any case
+        }
+    }
+    handleStats('endGame');
+}
+
+const drawResult = (result) => {
+    let message = "", imgSrcStat= "";
+    const status = document.createElement('p');
+    let img = document.createElement('img');
+    img.width = 200;
+    img.height = 300;
+
+    switch (result) {
+        case 'won':
+                message = `¡${playerName} has ganado!`;
+                status.classList.add('statusMsgWin');
+                imgSrcStat = "assets/img/trophy.png";
+            break;
+        case 'loss':
+                message = `${playerName} has perdido!`;
+                status.classList.add('statusMsgLoses');
+                imgSrcStat = "assets/img/lose.png";
+            break;
+        case 'tie':
+        default:
+                message = `¡No hay Ganador!`;
+                status.classList.add('statusMsgNoWin');
+                imgSrcStat = "assets/img/tie.png";
+                img.width = 300;
+                img.height = 300;
+            break;
+    }
+
+    status.appendChild(document.createTextNode(message));
+    document.getElementById('tableScore').innerHTML = '';
+    if(imgSrcStat != "") {
+        img.src = imgSrcStat;
+        document.getElementById('tableScore').appendChild(img);
+    }
+    document.getElementById('tableScore').appendChild(status);
+}
+
+const handleStats = (gameStat) => {
+    switch(gameStat) {
+        case 'newGame':
+            turn = 1;
+            document.getElementById('drawCardBtn').disabled = false;
+            document.getElementById('newGameBtn').disabled = true;
+            document.getElementById('newGameBtn').style.display = "none";
+            if(playerCounter >= 15) document.getElementById('endTurnBtn').disabled = false;
+        break;
+        case 'endGame':
+            document.getElementById('newGameBtn').style.display = "inline";
+            document.getElementById('newGameBtn').disabled = false;
+            document.getElementById('drawCardBtn').disabled = true;
+            document.getElementById('endTurnBtn').disabled = true;
+        break;
+    }
+}
+
+const drawCardUser = () => {
+    if(turn == 1){
+        drawCard('player1');
+        if(playerCounter == 21) evalHands();
+    } else {
+        alert('This should never be reached! Violation Attempt!');
+    }
+}
+
+const stopTurn = () => {
+    if(turn == 1){
+        turn = 2;
+        pcTurn();
+    } else {
+        alert('This should never be reached! Violation Attempt!');
+    }
+}
+
+const pcTurn = () => {
+    if(turn == 2){
+        while(pcCounter<15){
+            drawCard('computer');
+        }
+        evalHands();
+    } 
 }
